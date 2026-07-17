@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DigiVistora — Invitation Suite (50 Editable Cards)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=EB+Garamond:ital@0;1&family=Fredoka:wght@400;500;600&family=Nunito:wght@400;600;700&family=Poppins:wght@400;500;600&family=Inter:wght@400;500;600&family=Marcellus&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  :root{
+    --ink:#2b2620;
+    --paper:#faf7f2;
+    --panel:#ffffff;
+    --line:#e7e1d6;
+    --muted:#8a8072;
+    --accent:#a9825b;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);font-family:'Inter',sans-serif;}
+  .app{display:grid;grid-template-columns:300px 1fr;min-height:100vh;}
+  .brandbar{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;padding:14px 22px;background:#1f1b16;color:#f4ede1;position:sticky;top:0;z-index:50;}
+  .brandbar .logo{font-family:'Marcellus',serif;font-size:18px;letter-spacing:.06em;}
+  .brandbar .logo b{color:#d9b98a;}
+  .brandbar .sub{font-size:11.5px;color:#b9ad99;letter-spacing:.03em;}
+  .sidebar{border-right:1px solid var(--line);background:var(--panel);max-height:calc(100vh - 52px);overflow-y:auto;position:sticky;top:52px;align-self:start;}
+  .sidebar-inner{padding:14px 10px 60px;}
+  .search{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;font-size:13px;margin-bottom:10px;font-family:'Inter',sans-serif;}
+  .group-title{font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:600;margin:16px 8px 6px;}
+  .card-item{display:flex;align-items:center;gap:9px;padding:8px 9px;border-radius:8px;cursor:pointer;font-size:12.8px;line-height:1.25;color:#3a352c;}
+  .card-item:hover{background:#f2ece0;}
+  .card-item.active{background:#efe3cc;font-weight:600;}
+  .swatch{width:14px;height:14px;border-radius:4px;flex:none;border:1px solid rgba(0,0,0,.08);}
+  .main{padding:28px 30px 80px;display:flex;flex-direction:column;align-items:center;gap:18px;}
+  .stage-head{width:100%;max-width:1000px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px;}
+  .stage-head h1{font-family:'Marcellus',serif;font-size:22px;margin:0;}
+  .stage-head p{margin:4px 0 0;color:var(--muted);font-size:13px;max-width:560px;}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;}
+  .btn{border:1px solid #d8cfbd;background:#fff;color:#2b2620;padding:9px 14px;border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;}
+  .btn.primary{background:#1f1b16;color:#f4ede1;border-color:#1f1b16;}
+  .btn:hover{filter:brightness(0.97);}
+  .hint{font-size:11.5px;color:var(--muted);width:100%;max-width:1000px;background:#fff;border:1px dashed var(--line);padding:9px 12px;border-radius:8px;}
+  .stage{width:420px;height:588px;position:relative;box-shadow:0 18px 40px -18px rgba(0,0,0,.35);border-radius:2px;overflow:hidden;}
+  .stage[data-scale="wide"]{width:588px;height:420px;}
+
+  /* ===== card base ===== */
+  .card{width:100%;height:100%;position:relative;padding:34px 34px 30px;display:flex;flex-direction:column;align-items:center;text-align:center;}
+  .kicker{font-family:'Montserrat',sans-serif;font-size:10.5px;letter-spacing:.32em;text-transform:uppercase;opacity:.8;margin-bottom:10px;}
+  .title{font-size:30px;line-height:1.15;margin:2px 0 8px;}
+  .names{font-size:26px;margin:8px 0 6px;line-height:1.25;}
+  .subnote{font-size:13.5px;opacity:.85;max-width:88%;margin:4px auto 14px;line-height:1.55;}
+  .details{font-size:13.5px;line-height:1.9;margin-top:auto;padding-top:10px;}
+  .details .row{display:block;}
+  .rule{width:52px;height:1px;background:currentColor;opacity:.5;margin:12px auto;}
+  .brandfoot{position:absolute;left:0;right:0;bottom:10px;display:flex;align-items:center;justify-content:center;gap:6px;font-family:'Montserrat',sans-serif;font-size:8.6px;letter-spacing:.18em;text-transform:uppercase;opacity:.55;}
+  .brandfoot .dot{width:3px;height:3px;border-radius:50%;background:currentColor;opacity:.6;}
+  [contenteditable="true"]{outline:none;cursor:text;border-radius:3px;transition:box-shadow .15s;}
+  [contenteditable="true"]:hover{box-shadow:0 0 0 2px rgba(0,0,0,.06);}
+  [contenteditable="true"]:focus{box-shadow:0 0 0 2px rgba(0,0,0,.18);}
+  .motif{position:absolute;pointer-events:none;}
+  .motif svg{width:100%;height:100%;display:block;}
+  .frame-border{position:absolute;inset:14px;border:1px solid currentColor;opacity:.35;pointer-events:none;}
+  .frame-border.double{inset:10px;}
+  .frame-border.double::after{content:"";position:absolute;inset:6px;border:1px solid currentColor;opacity:1;}
+  .band-top{position:absolute;top:0;left:0;right:0;height:34%;}
+  .arch{position:absolute;top:26px;left:50%;transform:translateX(-50%);width:150px;height:150px;border:1px solid currentColor;border-bottom:none;border-radius:150px 150px 0 0;opacity:.4;}
+  .content-lift{position:relative;z-index:2;}
+  @media(max-width:760px){
+    .app{grid-template-columns:1fr;}
+    .sidebar{max-height:280px;position:relative;top:0;}
+    .stage{width:92vw;height:calc(92vw*1.4);max-width:420px;max-height:588px;}
+    .stage[data-scale="wide"]{height:calc(92vw*0.714);}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="brandbar">
+    <div>
+      <div class="logo"><b>DigiVistora</b> Invitation Studio</div>
+      <div class="sub">50 editable digital invitations · 30 occasions</div>
+    </div>
+    <div class="sub" id="counter">Card 1 / 50</div>
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-inner">
+      <input class="search" id="search" placeholder="Search an occasion…">
+      <div id="list"></div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="stage-head">
+      <div>
+        <h1 id="eventHeading">—</h1>
+        <p>Click any line on the card to edit it — names, date, time, venue, message. Then download as a high-resolution PNG.</p>
+      </div>
+      <div class="toolbar">
+        <button class="btn" id="resetBtn">Reset text</button>
+        <button class="btn primary" id="downloadBtn">Download PNG</button>
+      </div>
+    </div>
+    <div class="hint">Tip: tap directly on any word on the invitation to edit it in place — no separate form needed. The small "DigiVistora" mark at the bottom is fixed branding and isn't editable.</div>
+    <div class="stage" id="stage"></div>
+  </div>
+</div>
+
+<script>
+/* ============ MOTIF LIBRARY (line-art SVG, tinted via currentColor) ============ */
+const M = {
+  floral: `<svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M10 110 C 20 70, 40 40, 70 15"/><ellipse cx="72" cy="14" rx="9" ry="5" transform="rotate(30 72 14)"/><ellipse cx="60" cy="30" rx="8" ry="4.5" transform="rotate(60 60 30)"/><ellipse cx="46" cy="52" rx="8" ry="4.5" transform="rotate(80 46 52)"/><ellipse cx="34" cy="76" rx="7" ry="4" transform="rotate(100 34 76)"/><circle cx="78" cy="10" r="3" fill="currentColor" stroke="none"/></svg>`,
+  laurel: `<svg viewBox="0 0 160 80" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M5 70 C 40 30, 90 15, 155 10"/><g>${Array.from({length:9}).map((_,i)=>`<ellipse cx="${18+i*15}" cy="${64-i*6.2}" rx="8" ry="3.6" transform="rotate(${-35-i*2} ${18+i*15} ${64-i*6.2})"/>`).join('')}</g></svg>`,
+  ribbon: `<svg viewBox="0 0 100 60" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M50 30 C 30 5, 5 10, 5 30 C 5 50, 30 50, 50 30 C 70 50, 95 50, 95 30 C 95 10, 70 5, 50 30 Z"/><circle cx="50" cy="30" r="5" fill="currentColor" stroke="none"/></svg>`,
+  heartvine: `<svg viewBox="0 0 120 90" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M5 80 C 30 60, 20 30, 45 25 C 60 22, 60 40, 45 42 C 60 44, 60 62, 45 60 C 65 66, 90 55, 110 20"/></svg>`,
+  confetti: `<svg viewBox="0 0 120 120" fill="currentColor"><circle cx="15" cy="20" r="3"/><circle cx="40" cy="8" r="2.2"/><rect x="65" y="12" width="6" height="6" transform="rotate(20 68 15)"/><circle cx="95" cy="25" r="2.6"/><rect x="20" y="45" width="5" height="5" transform="rotate(40 22 47)"/><circle cx="55" cy="40" r="2"/><circle cx="100" cy="55" r="3"/><rect x="10" y="75" width="6" height="6" transform="rotate(10 13 78)"/></svg>`,
+  sunburst: `<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.4">${Array.from({length:14}).map((_,i)=>{const a=i*(360/14)*Math.PI/180;const x=50+38*Math.cos(a),y=50+38*Math.sin(a);return `<line x1="50" y1="50" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}"/>`}).join('')}<circle cx="50" cy="50" r="7" fill="currentColor" stroke="none"/></svg>`,
+  wreath: `<svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="1.3">${Array.from({length:22}).map((_,i)=>{const a=i*(360/22)*Math.PI/180;const x=60+42*Math.cos(a),y=60+42*Math.sin(a);return `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="7" ry="3.2" transform="rotate(${(a*180/Math.PI)+90} ${x.toFixed(1)} ${y.toFixed(1)})"/>`}).join('')}</svg>`,
+  balloons: `<svg viewBox="0 0 100 130" fill="none" stroke="currentColor" stroke-width="1.4"><ellipse cx="30" cy="28" rx="16" ry="20"/><path d="M30 48 L27 100"/><ellipse cx="62" cy="20" rx="14" ry="18"/><path d="M62 38 L65 95"/><ellipse cx="48" cy="42" rx="12" ry="15"/><path d="M48 57 L48 105"/></svg>`,
+  cloud: `<svg viewBox="0 0 120 70" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M25 55 a15 15 0 0 1 0 -30 a20 20 0 0 1 38 -8 a17 17 0 0 1 22 16 a13 13 0 0 1 -3 22 Z"/></svg>`,
+  dove: `<svg viewBox="0 0 120 80" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M10 55 C 25 40, 30 25, 45 20 C 42 28, 46 32, 52 30 C 60 20, 75 18, 90 28 C 78 28, 70 34, 72 42 C 85 40, 100 45, 108 55 C 92 50, 80 54, 74 62 C 60 58, 46 60, 38 68 C 40 58, 32 52, 22 54 C 18 54, 13 55, 10 55 Z"/></svg>`,
+  leafframe: `<svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M10 10 C 40 12, 60 30, 65 65"/><ellipse cx="20" cy="15" rx="8" ry="4" transform="rotate(35 20 15)"/><ellipse cx="34" cy="18" rx="8" ry="4" transform="rotate(55 34 18)"/><ellipse cx="47" cy="30" rx="8" ry="4" transform="rotate(75 47 30)"/><ellipse cx="58" cy="48" rx="7" ry="3.6" transform="rotate(90 58 48)"/></svg>`,
+  star: `<svg viewBox="0 0 100 100" fill="currentColor"><path d="M50 8 L58 38 L88 38 L64 56 L73 86 L50 67 L27 86 L36 56 L12 38 L42 38 Z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>`,
+  graduationcap: `<svg viewBox="0 0 120 90" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 35 L60 15 L110 35 L60 55 Z"/><path d="M35 44 L35 65 C 35 74, 85 74, 85 65 L85 44"/><line x1="110" y1="35" x2="110" y2="62"/><circle cx="110" cy="65" r="2.4" fill="currentColor" stroke="none"/></svg>`,
+  snowflake: `<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.4">${[0,60,120].map(deg=>`<line x1="50" y1="8" x2="50" y2="92" transform="rotate(${deg} 50 50)"/>`).join('')}${[0,60,120].flatMap(deg=>[18,50,82].map(y=>`<line x1="50" y1="${y}" x2="${y<50?40:60}" y2="${y<50?y-10:y+10}" transform="rotate(${deg} 50 50)"/>`)).join('')}</svg>`,
+  firework: `<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.3">${Array.from({length:12}).map((_,i)=>{const a=i*30*Math.PI/180;const x1=50+14*Math.cos(a),y1=50+14*Math.sin(a);const x2=50+34*Math.cos(a),y2=50+34*Math.sin(a);return `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}"/><circle cx="${x2.toFixed(1)}" cy="${y2.toFixed(1)}" r="1.6" fill="currentColor"/>`}).join('')}</svg>`,
+  pumpkin: `<svg viewBox="0 0 100 90" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M50 20 C 20 20, 15 55, 30 72 C 40 82, 60 82, 70 72 C 85 55, 80 20, 50 20 Z"/><path d="M50 20 L50 5"/><path d="M35 22 C 35 45, 35 60, 40 75"/><path d="M50 20 C 50 45, 50 60, 50 78"/><path d="M65 22 C 65 45, 65 60, 60 75"/></svg>`,
+  toast: `<svg viewBox="0 0 120 90" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M30 10 L20 45 C 20 60, 40 60, 40 45 L30 10 Z" transform="rotate(-14 30 10)"/><path d="M85 10 L75 45 C 75 60, 95 60, 95 45 L85 10 Z" transform="rotate(14 85 10)"/><line x1="30" y1="60" x2="30" y2="78"/><line x1="85" y1="60" x2="85" y2="78"/><line x1="18" y1="78" x2="42" y2="78"/><line x1="73" y1="78" x2="97" y2="78"/></svg>`,
+};
+
+function motifNode(key, extraStyle){
+  return `<div class="motif" style="${extraStyle}">${M[key]||''}</div>`;
+}
+
+/* ============ 50 CARD DEFINITIONS ============ */
+const EVENTS = [
+// -------- LIFE MILESTONES --------
+{id:1,group:"Wedding",title:"Wedding — Save the Date",kicker:"Save the Date",mainTitle:"We're Getting Married",names:"Aanya & Rohan",date:"Saturday · 14 February 2026",time:"Formal invitation to follow",venue:"Bengaluru, India",note:"Please keep the evening free — we'd love for you to be there.",pal:["#faf5ec","#fffdf9","#3a2f22","#b3874f","#e9d9bd"],font:["Playfair Display","Cormorant Garamond"],motif:"floral",layout:1},
+{id:2,group:"Wedding",title:"Wedding — Invitation",kicker:"Together With Their Families",mainTitle:"Request the Pleasure of Your Company",names:"Aanya weds Rohan",date:"Sat, 14 Feb 2026 · 6:30 PM",time:"Ceremony followed by dinner & celebrations",venue:"The Garden Pavilion, Bengaluru",note:"Your presence is the greatest gift of all.",pal:["#faf3ea","#fffdf8","#3a2f22","#a9825b","#e6d3ad"],font:["Playfair Display","Cormorant Garamond"],motif:"laurel",layout:2},
+{id:3,group:"Wedding",title:"Wedding — RSVP Card",kicker:"Kindly Respond By 1 Jan 2026",mainTitle:"RSVP",names:"Aanya & Rohan",date:"◻ Joyfully Accept   ◻ Regretfully Decline",time:"Number of guests: ____",venue:"Kindly return by post or scan the code",note:"",pal:["#faf5ec","#fffdf9","#3a2f22","#b3874f","#e9d9bd"],font:["Playfair Display","Cormorant Garamond"],motif:"ribbon",layout:4},
+{id:4,group:"Engagement",title:"Engagement Party",kicker:"We Said Yes!",mainTitle:"Engagement Celebration",names:"Meera & Aditya",date:"Sunday · 22 March 2026 · 7:00 PM",time:"Cocktails & Dinner",venue:"Rosewood Terrace, Bengaluru",note:"Join us to celebrate the beginning of forever.",pal:["#fbeeef","#fffbfb","#3a2a2c","#b9707a","#f0d3d6"],font:["Playfair Display","Cormorant Garamond"],motif:"heartvine",layout:1},
+{id:5,group:"Bridal Shower",title:"Bridal Shower",kicker:"Shower the Bride-to-Be",mainTitle:"Bridal Shower",names:"In Honour of Kavya",date:"Saturday · 4 April 2026 · 4:00 PM",time:"Tea, treats & well wishes",venue:"The Courtyard Café",note:"A small token of love, no gifts necessary.",pal:["#f7f0ee","#fffcfb","#3a2f2b","#c88f8f","#efd9d2"],font:["Playfair Display","Cormorant Garamond"],motif:"floral",layout:3},
+{id:6,group:"Bachelorette",title:"Bachelorette Party",kicker:"Last Fling Before the Ring",mainTitle:"Bachelorette Night",names:"Team Bride",date:"Friday · 10 April 2026 · 8:00 PM",time:"Dinner, dancing & mischief",venue:"Skyline Lounge, Bengaluru",note:"Dress code: something sparkly ✦",pal:["#f7eef2","#fffbfc","#352a30","#c17ea0","#eeccd9"],font:["Playfair Display","Cormorant Garamond"],motif:"confetti",layout:3},
+{id:7,group:"Bachelor",title:"Bachelor Party",kicker:"One Last Ride",mainTitle:"Bachelor Night",names:"Team Groom",date:"Friday · 10 April 2026 · 9:00 PM",time:"Grills, games & good company",venue:"The Backyard, Bengaluru",note:"Bring your A-game.",pal:["#eee9e2","#fbf9f5","#26241f","#8a6b45","#d9cbb1"],font:["Marcellus","Inter"],motif:"sunburst",layout:4},
+{id:8,group:"Rehearsal Dinner",title:"Wedding Rehearsal Dinner",kicker:"On the Eve of the Wedding",mainTitle:"Rehearsal Dinner",names:"Aanya & Rohan",date:"Friday · 13 Feb 2026 · 7:30 PM",time:"An intimate dinner with our nearest & dearest",venue:"Olive Vine Restaurant",note:"",pal:["#eef1ea","#fbfcf8","#232821","#5f7a5a","#cddac6"],font:["Playfair Display","EB Garamond"],motif:"laurel",layout:2},
+{id:9,group:"Vow Renewal",title:"Vow Renewal Ceremony",kicker:"Still Choosing Each Other",mainTitle:"Vow Renewal",names:"Priya & Karan",date:"Sunday · 17 May 2026 · 5:00 PM",time:"25 years, and still going strong",venue:"Lakeside Chapel Lawn",note:"Join us as we say 'I do' all over again.",pal:["#faf5ec","#fffdf9","#3a2f22","#b3874f","#e9d9bd"],font:["Playfair Display","Cormorant Garamond"],motif:"floral",layout:1},
+{id:10,group:"Anniversary",title:"Anniversary Party — 25th (Silver)",kicker:"Celebrating 25 Wonderful Years",mainTitle:"Silver Anniversary",names:"Sunita & Vikram",date:"Saturday · 6 June 2026 · 7:00 PM",time:"Dinner & dancing",venue:"The Silver Hall",note:"Twenty-five years of love, laughter & partnership.",pal:["#f1f1f2","#fdfdfe","#2b2b2e","#8d8f94","#dcdde1"],font:["Playfair Display","Cormorant Garamond"],motif:"wreath",layout:2},
+{id:11,group:"Anniversary",title:"Anniversary Party — 50th (Golden)",kicker:"Celebrating 50 Golden Years",mainTitle:"Golden Anniversary",names:"Lakshmi & Ramesh",date:"Sunday · 6 June 2026 · 6:30 PM",time:"Dinner & dancing",venue:"The Grand Ballroom",note:"Half a century of love — join our celebration.",pal:["#f8f1e2","#fffdf6","#332b19","#b8912f","#ecd8a4"],font:["Playfair Display","Cormorant Garamond"],motif:"wreath",layout:2},
+{id:12,group:"Baby Shower",title:"Baby Shower — Neutral",kicker:"A Little One Is On the Way",mainTitle:"Baby Shower",names:"In Honour of Neha",date:"Saturday · 8 August 2026 · 3:00 PM",time:"Tea, games & tiny gifts",venue:"The Green Room",note:"Come shower our mama-to-be with love.",pal:["#eaf3ee","#fbfefc","#20281f","#6fa189","#c8e3d5"],font:["Cormorant Garamond","EB Garamond"],motif:"cloud",layout:3},
+{id:13,group:"Baby Shower",title:"Baby Shower — Little Star",kicker:"Twinkle Twinkle Little One",mainTitle:"Baby Shower",names:"In Honour of Ritika",date:"Sunday · 16 August 2026 · 4:00 PM",time:"Sweets, songs & sweet wishes",venue:"Maple Garden Café",note:"",pal:["#fbf6e6","#fffdf4","#33301b","#c9a227","#f2e6b3"],font:["Cormorant Garamond","EB Garamond"],motif:"balloons",layout:3},
+{id:14,group:"Gender Reveal",title:"Gender Reveal Party",kicker:"He or She? Let's See!",mainTitle:"Gender Reveal",names:"The Sharmas",date:"Saturday · 5 September 2026 · 5:00 PM",time:"Balloons pop at 6 PM sharp",venue:"Backyard Lawn, Whitefield",note:"Pink or blue — come find out with us!",pal:["#f6eef2","#fffbfc","#2c2529","#c98fa8","#e9d3e0"],font:["Fredoka","Nunito"],motif:"balloons",layout:1},
+{id:15,group:"Christening",title:"Christening / Baptism",kicker:"A Blessing to Celebrate",mainTitle:"Christening Ceremony",names:"Baby Elena",date:"Sunday · 20 September 2026 · 10:00 AM",time:"Ceremony followed by brunch",venue:"St. Mary's Chapel",note:"Join us as we welcome her into faith and family.",pal:["#eaf0f6","#fbfdff","#212a33","#6f93ad","#cadcea"],font:["Playfair Display","EB Garamond"],motif:"dove",layout:2},
+{id:16,group:"Naming Ceremony",title:"Naming Ceremony",kicker:"A Name, A New Beginning",mainTitle:"Naming Ceremony",names:"Baby Arjun",date:"Saturday · 3 October 2026 · 11:00 AM",time:"Followed by a light luncheon",venue:"The Fern Garden",note:"Come celebrate the newest member of our family.",pal:["#eef1e8","#fbfcf7","#242920","#7c8f56","#d5dcbe"],font:["Cormorant Garamond","EB Garamond"],motif:"leafframe",layout:1},
+{id:17,group:"Bar Mitzvah",title:"Bar Mitzvah",kicker:"Today I Am a Man",mainTitle:"Bar Mitzvah",names:"Noah Levi",date:"Saturday · 10 October 2026 · 11:00 AM",time:"Service followed by celebration",venue:"Beth Shalom Hall",note:"Join us as Noah is called to the Torah.",pal:["#eaeef4","#fbfcfe","#1f2530","#4f6a95","#c8d3e6"],font:["Marcellus","Inter"],motif:"star",layout:2},
+{id:18,group:"Bat Mitzvah",title:"Bat Mitzvah",kicker:"Today I Am a Woman",mainTitle:"Bat Mitzvah",names:"Maya Cohen",date:"Saturday · 17 October 2026 · 11:00 AM",time:"Service followed by celebration",venue:"Beth Shalom Hall",note:"Join us as Maya is called to the Torah.",pal:["#f7eef1","#fffbfc","#2f2528","#b17a93","#ecd4de"],font:["Marcellus","Cormorant Garamond"],motif:"star",layout:2},
+{id:19,group:"Confirmation",title:"Confirmation",kicker:"A Step of Faith",mainTitle:"Confirmation Ceremony",names:"Isabella Fernandes",date:"Sunday · 25 October 2026 · 10:00 AM",time:"Mass followed by reception",venue:"Sacred Heart Church",note:"Please join us in celebrating this milestone of faith.",pal:["#f4eee6","#fffcf7","#2d271e","#8a6b3f","#e2d2ad"],font:["Playfair Display","EB Garamond"],motif:"dove",layout:1},
+{id:20,group:"Quinceañera",title:"Quinceañera — Elegant",kicker:"Mis Quince Años",mainTitle:"Quinceañera",names:"Isabela Rodríguez",date:"Saturday · 7 November 2026 · 6:00 PM",time:"Mass, dinner & dancing to follow",venue:"Casa Bella Ballroom",note:"Celebrating fifteen years & a new chapter.",pal:["#fbeee4","#fffaf5","#3a281c","#c67a45","#f0d3b6"],font:["Playfair Display","Cormorant Garamond"],motif:"floral",layout:1},
+{id:21,group:"Quinceañera",title:"Quinceañera — Fiesta",kicker:"¡Vamos a Celebrar!",mainTitle:"Quinceañera Fiesta",names:"Camila Torres",date:"Saturday · 14 November 2026 · 7:00 PM",time:"Music, dancing & celebration",venue:"Jardín Fiesta Hall",note:"",pal:["#fdeef4","#fffafc","#361f2b","#c4478a","#f4c6de"],font:["Fredoka","Nunito"],motif:"sunburst",layout:3},
+{id:22,group:"Sweet 16",title:"Sweet 16 — Classic",kicker:"Sweet Sixteen",mainTitle:"Sweet 16",names:"Zoe Anderson",date:"Friday · 20 November 2026 · 7:00 PM",time:"Dinner & dance floor open till late",venue:"The Orchid Room",note:"",pal:["#f1eef7","#fdfcff","#28243a","#8367ab","#d9cdec"],font:["Playfair Display","Cormorant Garamond"],motif:"balloons",layout:2},
+{id:23,group:"Sweet 16",title:"Sweet 16 — Glam",kicker:"Sixteen & Shining",mainTitle:"Sweet 16",names:"Ava Thompson",date:"Friday · 27 November 2026 · 8:00 PM",time:"Glam dress code — sparkle encouraged",venue:"The Onyx Lounge",note:"",pal:["#1c1a17","#26221d","#f3ead9","#d9b98a","#4a4238"],font:["Playfair Display","Montserrat"],motif:"sunburst",layout:4},
+{id:24,group:"Graduation",title:"Graduation Party — School",kicker:"Class of 2026",mainTitle:"Graduation Celebration",names:"Ishaan Mehta",date:"Sunday · 6 December 2026 · 5:00 PM",time:"Celebrating the next chapter",venue:"The Meadow Hall",note:"So proud of how far you've come.",pal:["#eaeef6","#fbfcff","#1f2534","#3f5b8f","#c8d4ea"],font:["Marcellus","Inter"],motif:"graduationcap",layout:4},
+{id:25,group:"Graduation",title:"Graduation Party — College",kicker:"Class of 2026",mainTitle:"Convocation Celebration",names:"Ananya Rao",date:"Saturday · 12 December 2026 · 6:00 PM",time:"Dinner in honour of this achievement",venue:"The Maroon Hall",note:"Cheers to hard work & new beginnings.",pal:["#f4e9e9","#fffafa","#2f1f1f","#8c3b3b","#e6c3c3"],font:["Marcellus","Cormorant Garamond"],motif:"graduationcap",layout:2},
+
+// -------- BIRTHDAYS & FAMILY --------
+{id:26,group:"Milestone Birthday",title:"Milestone Birthday — Classic Gold",kicker:"Turning Fabulous",mainTitle:"A Milestone Birthday",names:"Celebrating Rahul · 40 Years",date:"Saturday · 9 January 2027 · 8:00 PM",time:"Dinner, drinks & dancing",venue:"The Terrace Club",note:"Come raise a toast to four fabulous decades.",pal:["#1c1a17","#26221d","#f3ead9","#d9b98a","#4a4238"],font:["Playfair Display","Montserrat"],motif:"wreath",layout:1},
+{id:27,group:"Milestone Birthday",title:"Milestone Birthday — Modern Floral",kicker:"Cheers to This Chapter",mainTitle:"Birthday Celebration",names:"Celebrating Divya · 30 Years",date:"Friday · 15 January 2027 · 7:30 PM",time:"Cocktails & conversation",venue:"The Rooftop, Indiranagar",note:"",pal:["#f7ece3","#fffaf6","#3a271b","#c07a4a","#eecfb3"],font:["Playfair Display","Cormorant Garamond"],motif:"floral",layout:3},
+{id:28,group:"Kids Birthday",title:"Kids' Birthday — Adventure",kicker:"Let the Adventure Begin",mainTitle:"Birthday Party",names:"Aryan Turns 6!",date:"Sunday · 24 January 2027 · 4:00 PM",time:"Games, cake & fun galore",venue:"Sunshine Party Hall",note:"Come dressed for adventure!",pal:["#e7f2f0","#fbfefd","#1c2b28","#3f9088","#bfe3dd"],font:["Fredoka","Nunito"],motif:"balloons",layout:3},
+{id:29,group:"Kids Birthday",title:"Kids' Birthday — Fairy Garden",kicker:"A Little Magic, A Lot of Fun",mainTitle:"Birthday Party",names:"Aadhya Turns 5!",date:"Saturday · 30 January 2027 · 4:00 PM",time:"Cake, games & fairy wishes",venue:"The Butterfly Garden",note:"",pal:["#f7eef7","#fffbff","#2f2333","#a26bb0","#e6cdec"],font:["Fredoka","Nunito"],motif:"balloons",layout:3},
+{id:30,group:"Family Reunion",title:"Family Reunion",kicker:"Roots & Reunions",mainTitle:"Family Reunion",names:"The Kapoor Family",date:"Sunday · 7 February 2027 · 12:00 PM",time:"Lunch, stories & catching up",venue:"Green Acres Farmhouse",note:"Every branch, one tree — come celebrate our family.",pal:["#f1efe3","#fdfcf5","#28271b","#8a8046","#dbd6b0"],font:["Cormorant Garamond","EB Garamond"],motif:"leafframe",layout:1},
+{id:31,group:"Family Reunion",title:"Family Reunion — Garden Picnic",kicker:"A Day Together, Just Us",mainTitle:"Family Picnic Reunion",names:"The Nair Family",date:"Sunday · 14 February 2027 · 11:00 AM",time:"Picnic lunch under the trees",venue:"Willow Park Gardens",note:"",pal:["#f7f3df","#fffdf1","#2e2b16","#c9a227","#f0e4a3"],font:["Fredoka","Nunito"],motif:"leafframe",layout:3},
+
+// -------- CAREER / RETIREMENT --------
+{id:32,group:"Retirement",title:"Retirement Party",kicker:"A New Chapter Begins",mainTitle:"Retirement Celebration",names:"Honouring Suresh Iyer",date:"Friday · 26 February 2027 · 6:30 PM",time:"Cocktails & farewell toasts",venue:"The Regency Hall",note:"35 remarkable years — thank you for the legacy.",pal:["#eaeef6","#fbfcff","#1f2534","#3f5b8f","#c8d4ea"],font:["Marcellus","Inter"],motif:"laurel",layout:4},
+{id:33,group:"Farewell",title:"Farewell / Leaving Party",kicker:"Until We Meet Again",mainTitle:"Farewell Gathering",names:"For Sneha Menon",date:"Thursday · 4 March 2027 · 7:00 PM",time:"Drinks & well-wishes",venue:"The Harbour Lounge",note:"Wishing you fair winds in your next adventure.",pal:["#e8f1f2","#fbfeff","#1d2b2c","#3f8f95","#c3e2e4"],font:["Marcellus","Inter"],motif:"sunburst",layout:4},
+{id:34,group:"Farewell",title:"Farewell — Bon Voyage",kicker:"Bon Voyage",mainTitle:"Bon Voyage Party",names:"For Rakesh Bhatt",date:"Friday · 12 March 2027 · 7:00 PM",time:"Send-off dinner & toasts",venue:"The Anchor Room",note:"",pal:["#eaeef6","#fbfcff","#1c2536","#33507f","#c1cfe6"],font:["Marcellus","Inter"],motif:"sunburst",layout:3},
+{id:35,group:"Promotion",title:"Promotion Celebration",kicker:"Well Earned, Well Deserved",mainTitle:"Promotion Celebration",names:"Congratulations, Priyanka",date:"Saturday · 20 March 2027 · 7:30 PM",time:"Drinks in her honour",venue:"The Skyline Bar",note:"Here's to hard work paying off.",pal:["#1f1e1c","#28261f","#f2ead6","#c9a961","#4c4738"],font:["Marcellus","Montserrat"],motif:"ribbon",layout:4},
+{id:36,group:"Promotion",title:"Promotion Celebration — Rising Star",kicker:"On the Rise",mainTitle:"Celebrating a Promotion",names:"Congratulations, Farhan",date:"Friday · 26 March 2027 · 7:00 PM",time:"A toast to the next level",venue:"The Loft, MG Road",note:"",pal:["#e7f1ee","#fbfefc","#1c2b26","#3f8f74","#c2e2d6"],font:["Marcellus","Inter"],motif:"star",layout:1},
+{id:37,group:"Business Launch",title:"Business Launch / Grand Opening",kicker:"Doors Now Open",mainTitle:"Grand Opening",names:"Introducing Studio Lumen",date:"Saturday · 3 April 2027 · 11:00 AM",time:"Ribbon cutting at noon",venue:"12 Residency Road",note:"Join us as we begin this new journey.",pal:["#e9f2ec","#fbfefc","#1c2b22","#2f8f5f","#bfe2cd"],font:["Marcellus","Inter"],motif:"sunburst",layout:2},
+{id:38,group:"Business Launch",title:"Business Launch — Ribbon Cutting",kicker:"A New Beginning",mainTitle:"Ribbon Cutting Ceremony",names:"Introducing The Oak & Ember",date:"Saturday · 10 April 2027 · 5:00 PM",time:"Refreshments & tours to follow",venue:"48 Church Street",note:"",pal:["#1e1c19","#27231e","#f1e8d4","#c9a961","#4a4436"],font:["Marcellus","Montserrat"],motif:"ribbon",layout:4},
+
+// -------- HOLIDAYS & SEASONAL --------
+{id:39,group:"Thanksgiving",title:"Thanksgiving Dinner",kicker:"Gather & Give Thanks",mainTitle:"Thanksgiving Dinner",names:"The Williams Family",date:"Thursday · 26 November 2026 · 5:00 PM",time:"Dinner served at 6 PM",venue:"Our Home, 14 Maple Lane",note:"Bring your appetite & your gratitude.",pal:["#f5ebdb","#fdf7ec","#33260f","#b5722f","#e9c89a"],font:["Playfair Display","EB Garamond"],motif:"leafframe",layout:1},
+{id:40,group:"Thanksgiving",title:"Thanksgiving — Harvest Table",kicker:"A Harvest of Blessings",mainTitle:"Harvest Thanksgiving",names:"The Johnson Family",date:"Thursday · 26 November 2026 · 4:30 PM",time:"Potluck — bring a favourite dish",venue:"The Old Barn Farmhouse",note:"",pal:["#f6e8d6","#fdf6ea","#341f0d","#b95c1f","#eec49b"],font:["Fredoka","Nunito"],motif:"pumpkin",layout:3},
+{id:41,group:"Christmas",title:"Christmas Party — Formal",kicker:"Season's Greetings",mainTitle:"Christmas Celebration",names:"The Hendersons Invite You",date:"Friday · 18 December 2026 · 7:00 PM",time:"Dinner & carols by the fire",venue:"The Manor House",note:"May your days be merry and bright.",pal:["#eef2ea","#fbfdf8","#1c2a1e","#8a6b2f","#d7c68f"],font:["Playfair Display","Cormorant Garamond"],motif:"wreath",layout:2},
+{id:42,group:"Christmas",title:"Christmas Party — Festive",kicker:"'Tis the Season",mainTitle:"Christmas Party",names:"Join Our Festive Gathering",date:"Saturday · 19 December 2026 · 6:00 PM",time:"Cocktails, cookies & carols",venue:"The Fireplace Lounge",note:"",pal:["#f7f0ec","#fffaf7","#2c1c1a","#8f2f2f","#e8c3c3"],font:["Fredoka","Nunito"],motif:"snowflake",layout:3},
+{id:43,group:"New Year",title:"New Year's Eve Party",kicker:"Cheers to a New Year",mainTitle:"New Year's Eve",names:"Ring In 2027 With Us",date:"Thursday · 31 December 2026 · 9:00 PM",time:"Countdown at midnight",venue:"The Grand Terrace",note:"Dress to sparkle.",pal:["#1a1917","#242220","#f2ead9","#cdae6a","#4a453c"],font:["Playfair Display","Montserrat"],motif:"firework",layout:4},
+{id:44,group:"New Year",title:"New Year's Eve — Champagne Toast",kicker:"Toast to Tomorrow",mainTitle:"Champagne & Countdown",names:"New Year's Eve Soirée",date:"Thursday · 31 December 2026 · 8:30 PM",time:"Midnight toast & dancing",venue:"The Silver Room",note:"",pal:["#1c1c1e","#28282a","#f1eef2","#b9b6c2","#4c4a52"],font:["Marcellus","Montserrat"],motif:"toast",layout:2},
+{id:45,group:"Independence Day",title:"Fourth of July Party",kicker:"Land of the Free",mainTitle:"4th of July Celebration",names:"The Millers' Backyard Bash",date:"Saturday · 4 July 2026 · 4:00 PM",time:"BBQ, games & fireworks at dusk",venue:"22 Liberty Lane",note:"",pal:["#eef1f6","#fbfdff","#1c2436","#8f3f3f","#c9d1e3"],font:["Marcellus","Inter"],motif:"firework",layout:3},
+{id:46,group:"Bonfire Night",title:"Guy Fawkes / Bonfire Night",kicker:"Remember, Remember",mainTitle:"Bonfire Night",names:"An Evening Around the Fire",date:"Thursday · 5 November 2026 · 6:00 PM",time:"Bonfire, fireworks & warm cider",venue:"The Old Meadow",note:"Wrap up warm.",pal:["#211c17","#2b241d","#f0e3cd","#c9762f","#4e4232"],font:["Marcellus","Montserrat"],motif:"firework",layout:4},
+{id:47,group:"Easter",title:"Easter Brunch",kicker:"Hop Into Spring",mainTitle:"Easter Brunch",names:"Join Us for Brunch",date:"Sunday · 5 April 2026 · 11:00 AM",time:"Brunch, mimosas & an egg hunt",venue:"The Garden Terrace",note:"",pal:["#f3eef7","#fdfbff","#28243a","#8a76b0","#d9cdec"],font:["Cormorant Garamond","EB Garamond"],motif:"leafframe",layout:1},
+{id:48,group:"Easter",title:"Easter Brunch — Pastel Garden",kicker:"Spring Is Here",mainTitle:"Easter Garden Brunch",names:"Come Celebrate the Season",date:"Sunday · 5 April 2026 · 12:00 PM",time:"Brunch buffet & garden games",venue:"The Blossom Courtyard",note:"",pal:["#eaf3ec","#fbfefc","#1e2b20","#4a9a72","#c2e2cd"],font:["Fredoka","Nunito"],motif:"floral",layout:3},
+
+// -------- FORMAL / SOCIAL --------
+{id:49,group:"Housewarming",title:"Housewarming Party — Modern",kicker:"Our Doors Are Open",mainTitle:"Housewarming",names:"The Guptas' New Home",date:"Saturday · 25 April 2026 · 5:00 PM",time:"Drinks, dinner & a house tour",venue:"14B Palm Meadows",note:"Come bless our new beginning.",pal:["#f5ece3","#fffaf6","#33251a","#b3703f","#eccca8"],font:["Marcellus","Inter"],motif:"leafframe",layout:2},
+{id:50,group:"Housewarming",title:"Housewarming Party — Traditional",kicker:"Griha Pravesh",mainTitle:"Housewarming Ceremony",names:"The Deshmukh Family",date:"Sunday · 3 May 2026 · 10:00 AM",time:"Puja followed by lunch",venue:"7 Lotus Enclave",note:"Your blessings will make our house a home.",pal:["#f8f0dc","#fffbef","#332a10","#b8912f","#eddaa0"],font:["Playfair Display","Cormorant Garamond"],motif:"floral",layout:1},
+];
+
+const GROUP_SECTIONS = [
+  ["Life Milestones",["Wedding","Engagement","Bridal Shower","Bachelorette","Bachelor","Rehearsal Dinner","Vow Renewal","Anniversary","Baby Shower","Gender Reveal","Christening","Naming Ceremony","Bar Mitzvah","Bat Mitzvah","Confirmation","Quinceañera","Sweet 16","Graduation"]],
+  ["Birthdays & Family",["Milestone Birthday","Kids Birthday","Family Reunion"]],
+  ["Career & Retirement",["Retirement","Farewell","Promotion","Business Launch"]],
+  ["Holidays & Seasonal",["Thanksgiving","Christmas","New Year","Independence Day","Bonfire Night","Easter"]],
+  ["Formal & Social",["Housewarming"]],
+];
+
+/* ============ RENDER ============ */
+let current = 0;
+let originalHTML = {};
+
+function layoutMarkup(ev){
+  const [bg,cardbg,ink,accent,accentLight] = ev.pal;
+  const [fontD, fontB] = ev.font;
+  const style = `background:${cardbg};color:${ink};font-family:'${fontB}',serif;`;
+  const titleStyle = `font-family:'${fontD}',serif;color:${ink};`;
+  const kickerStyle = `color:${accent};`;
+  const nameStyle = `font-family:'${fontD}',serif;color:${accent};`;
+  const detailStyle = `color:${ink};opacity:.85;`;
+  const footStyle = `color:${ink};`;
+
+  const fields = `
+    <div class="kicker" style="${kickerStyle}" contenteditable="true" data-f="kicker">${ev.kicker}</div>
+    <div class="title" style="${titleStyle}" contenteditable="true" data-f="mainTitle">${ev.mainTitle}</div>
+    <div class="names" style="${nameStyle}" contenteditable="true" data-f="names">${ev.names}</div>
+    ${ev.note ? `<div class="subnote" contenteditable="true" data-f="note">${ev.note}</div>` : ''}
+    <div class="rule" style="color:${accent}"></div>
+    <div class="details" style="${detailStyle}">
+      <span class="row" contenteditable="true" data-f="date">${ev.date}</span>
+      <span class="row" contenteditable="true" data-f="time">${ev.time}</span>
+      <span class="row" contenteditable="true" data-f="venue">${ev.venue}</span>
+    </div>
+  `;
+
+  let deco = '';
+  let frame = '';
+  const mColor = `color:${accent};`;
+
+  if(ev.layout===1){
+    deco = motifNode(ev.motif, `top:22px;left:50%;transform:translateX(-50%);width:78px;height:78px;${mColor}`);
+    frame = `<div class="frame-border" style="${mColor}"></div>`;
+  } else if(ev.layout===2){
+    deco = motifNode(ev.motif, `top:16px;left:16px;width:64px;height:64px;${mColor}`) +
+           motifNode(ev.motif, `bottom:16px;right:16px;width:64px;height:64px;transform:rotate(180deg);${mColor}`);
+    frame = `<div class="frame-border double" style="${mColor}"></div>`;
+  } else if(ev.layout===3){
+    deco = `<div class="band-top" style="background:${accentLight};"></div>` +
+           motifNode(ev.motif, `top:8px;left:50%;transform:translateX(-50%);width:100px;height:90px;color:${accent};`);
+  } else {
+    deco = `<div class="arch" style="color:${accent};"></div>` +
+           motifNode(ev.motif, `top:44px;left:50%;transform:translateX(-50%);width:56px;height:56px;${mColor}`);
+  }
+
+  const topPad = ev.layout===1 ? 'padding-top:108px;' : ev.layout===2 ? 'padding-top:34px;' : ev.layout===3 ? 'padding-top:118px;' : 'padding-top:118px;';
+
+  return `
+    <div class="card" style="${style}${topPad}">
+      ${deco}
+      ${frame}
+      <div class="content-lift" style="display:flex;flex-direction:column;align-items:center;flex:1;width:100%;">
+        ${fields}
+      </div>
+      <div class="brandfoot" style="${footStyle}">DigiVistora<span class="dot"></span>Invitation Studio</div>
+    </div>
+  `;
+}
+
+function buildSidebar(){
+  const list = document.getElementById('list');
+  list.innerHTML = '';
+  GROUP_SECTIONS.forEach(([label, groups])=>{
+    const items = EVENTS.filter(e=>groups.includes(e.group));
+    if(!items.length) return;
+    const h = document.createElement('div');
+    h.className='group-title';
+    h.textContent = label;
+    list.appendChild(h);
+    items.forEach(ev=>{
+      const row = document.createElement('div');
+      row.className='card-item';
+      row.dataset.id = ev.id;
+      row.innerHTML = `<span class="swatch" style="background:${ev.pal[3]}"></span><span>${ev.title}</span>`;
+      row.addEventListener('click', ()=>selectCard(ev.id));
+      list.appendChild(row);
+    });
+  });
+}
+
+function selectCard(id){
+  current = id;
+  const ev = EVENTS.find(e=>e.id===id);
+  document.querySelectorAll('.card-item').forEach(el=>{
+    el.classList.toggle('active', +el.dataset.id === id);
+  });
+  const activeEl = document.querySelector('.card-item.active');
+  if(activeEl) activeEl.scrollIntoView({block:'nearest'});
+
+  const stage = document.getElementById('stage');
+  stage.dataset.scale = (ev.layout===3 && false) ? '' : '';
+  stage.innerHTML = layoutMarkup(ev);
+  originalHTML[id] = stage.innerHTML;
+
+  document.getElementById('eventHeading').textContent = ev.title;
+  document.getElementById('counter').textContent = `Card ${EVENTS.findIndex(e=>e.id===id)+1} / 50`;
+}
+
+document.getElementById('search').addEventListener('input', (e)=>{
+  const q = e.target.value.toLowerCase();
+  document.querySelectorAll('.card-item').forEach(el=>{
+    const txt = el.textContent.toLowerCase();
+    el.style.display = txt.includes(q) ? 'flex' : 'none';
+  });
+});
+
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  if(originalHTML[current]){
+    document.getElementById('stage').innerHTML = originalHTML[current];
+  }
+});
+
+document.getElementById('downloadBtn').addEventListener('click', ()=>{
+  const stage = document.getElementById('stage');
+  const btn = document.getElementById('downloadBtn');
+  btn.textContent = 'Preparing…';
+  html2canvas(stage, {scale:3, backgroundColor:null}).then(canvas=>{
+    const link = document.createElement('a');
+    const ev = EVENTS.find(e=>e.id===current);
+    link.download = `DigiVistora-${ev.title.replace(/[^a-z0-9]+/gi,'-')}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    btn.textContent = 'Download PNG';
+  });
+});
+
+buildSidebar();
+selectCard(1);
+</script>
+</body>
+</html>
